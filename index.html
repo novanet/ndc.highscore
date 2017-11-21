@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html en="utf-8" lang="no" xmlns="http://www.w3.org/1999/xhtml" xml:lang="no">
+<head>
+    <meta name="robots" content="noindex" />
+    <meta name="googlebot" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Novanet</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" type="text/css" />
+    <link rel="stylesheet" href="https://bootswatch.com/lumen/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div ng-app="app" ng-controller="controller as vm">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="navigation">
+                    <!-- <a href ng-click="vm.goToPage(1)">Slideshow</a> | -->
+                    <a href ng-click="vm.goToPage(2)">Highscore</a> | 
+                    <!-- <a href ng-click="vm.goToPage(3)">Latest</a> | -->
+                    <a href ng-click="vm.goToPage(4)">Ranked only</a> |
+                    <a href ng-click="vm.goToPage(5)">All</a>
+                </div>
+                <div ng-if="vm.isBusyLoading" class="text-center">
+                    <div class="header">
+                        <h1>Loading..</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="!vm.isBusyLoading" ng-cloak>
+		
+            <section id="Slideshow" ng-if="vm.currentPage === 1 && vm.slideShow.length" class="text-center">
+                <div class="header">
+                        <h1 style="padding: 20px;">
+                            The most
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Anger'">angry</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Disgust'">disgusted</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Fear'">afraid</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Sadness'">sad</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Surprise'">surprised</span>
+                        </h1>
+                    </div>
+                    <div class="main text-center">
+                        <img height="1300" ng-src="{{vm.slideShow[vm.currentSlideShowPage-1].BlobUri}}">
+                    </div>
+                    <div class="footer">
+                        <h1 style="padding: 20px;">{{vm.slideShow[vm.currentSlideShowPage-1].User}} ({{(vm.slideShow[vm.currentSlideShowPage-1].Score*100).toFixed(3)}}%)</h1>
+                    </div>
+            </section>
+
+            <section id="Highscore" ng-if="vm.currentPage === 2">
+                <div class="header text-center">
+                </div>
+                <div class="col-lg-4" ng-repeat="highscoregroup in vm.highscore" style="border: 2px solid whitesmoke;">
+                    <div class="text-center">
+                        <h1 style="padding: 20px;"><strong>{{highscoregroup.emotion}}</strong></h1>
+                        <img height="450" ng-src="{{highscoregroup.highscore[0].BlobUri}}" style="margin-bottom:30px;">
+                    </div>
+					<div class="col-lg-10 col-lg-offset-1">
+						<table class="table table-condensed table-striped" style="background-color: white;font-size: 28px;">
+							<tr ng-repeat="list in highscoregroup.highscore" ng-class="{'is-bold': list.Rank === '1'}">
+								<td>{{list.Rank}}.</td>
+								<td>{{list.User}}</td>
+								<td class="text-right">{{(list.Score*100).toFixed(3)}}%</td>
+							</tr>						
+						</table>
+					</div>
+                </div>
+				<div class="col-lg-4" style="border-left: 2px solid whitesmoke;border-top: 2px solid whitesmoke;height: 100%;">
+					<img src="http://novanet.no/Content/Images/novanet-logo.svg" style="display:block;margin:auto;margin-top:20%;width: 80%;">
+				</div>
+            </section>
+
+            <section id="Latest" ng-if="vm.currentPage === 3" class="text-center">
+					<div class="header">
+                        <h1 style="padding: 20px;paddig-bottom:15px;">Latest</h1>
+                    </div>
+                    <div class="main">
+                        <img height="900" ng-src="{{vm.latestPhoto.BlobUri}}" style="padding-bottom: 10px;">
+                        <h1 style="padding: 20px;">{{vm.latestPhoto.Name}}</h1>
+                        <h2 style="padding-bottom: 30px;">Highest score: <strong>{{vm.latestPhoto.HighestScore}}</strong></h2>
+                        <div class="col-lg-6 col-lg-offset-3 text-center">
+                            <table class="table table-condensed table-striped text-left" style="font-size: 30px;">
+                                <thead>
+                                    <tr class="is-bold">
+                                        <td>Emotion</td>
+                                        <td class="text-center">Score (%)</td>
+                                        <td class="text-right">Rank</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Anger</td><td class="text-center">{{(vm.latestPhoto.AngerScore*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="vm.latestPhoto.RankAnger == 1"></i>&nbsp;&nbsp;{{vm.latestPhoto.RankAnger}}</td></tr>
+                                    <tr><td>Disgust</td><td class="text-center">{{(vm.latestPhoto.DisgustScore*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="vm.latestPhoto.RankDisgust == 1"></i>&nbsp;&nbsp;{{vm.latestPhoto.RankDisgust}}</td></tr>
+                                    <tr><td>Fear</td><td class="text-center">{{(vm.latestPhoto.FearScore*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="vm.latestPhoto.RankFear == 1"></i>&nbsp;&nbsp;{{vm.latestPhoto.RankFear}}</td></tr>
+                                    <tr><td>Sadness</td><td class="text-center">{{(vm.latestPhoto.SadnessScore*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="vm.latestPhoto.RankSadness == 1"></i>&nbsp;&nbsp;{{vm.latestPhoto.RankSadness}}</td></tr>
+                                    <tr><td>Surprise</td><td class="text-center">{{(vm.latestPhoto.SurpriseScore*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="vm.latestPhoto.RankSurprise == 1"></i>&nbsp;&nbsp;{{vm.latestPhoto.RankSurprise}}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </section>
+
+            <section id="Split-Ranked-Only" ng-if="vm.currentPage === 4" class="text-center">
+                <div class="col-lg-6">
+                    <div class="header">
+                        <h1 style="padding: 20px;">
+                            The most
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Anger'">angry</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Disgust'">disgusted</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Fear'">afraid</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Sadness'">sad</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Surprise'">surprised</span>
+                        </h1>
+                    </div>
+                    <div class="main text-center">
+                        <img height="1300" ng-src="{{vm.slideShow[vm.currentSlideShowPage-1].BlobUri}}">
+                    </div>
+                    <div class="footer">
+                        <h1 style="padding: 20px;">{{vm.slideShow[vm.currentSlideShowPage-1].User}} ({{(vm.slideShow[vm.currentSlideShowPage-1].Score*100).toFixed(3)}}%)</h1>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="header">
+                        <h1 style="padding: 20px;paddig-bottom:15px;">Latest</h1>
+                    </div>
+                    <div class="main">
+                        <img height="900" ng-src="{{vm.latestPhoto.blobUri}}" style="padding-bottom: 10px;">
+                        <h1 style="padding: 20px;">{{vm.latestPhoto.name}}</h1>
+                        <h2 style="padding-bottom: 30px;">Highest score: <strong>{{vm.latestPhoto.highestScore}}</strong></h2>
+                        <div class="col-lg-10 col-lg-offset-1 text-center">
+                            <table class="table table-condensed table-striped text-left" style="font-size: 30px;">
+                                <thead>
+                                    <tr class="is-bold">
+                                        <td>Emotion</td>
+                                        <td class="text-center">Score (%)</td>
+                                        <td class="text-right">Rank</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="emo in vm.latestPhoto.emotions | orderBy:'-score'" ng-if="emo.rank">
+                                        <td>{{emo.name}}</td><td class="text-center">{{(emo.score*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="emo.rank == 1"></i>&nbsp;&nbsp;{{emo.rank}}</td>
+                                    </tr> 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="Split-All" ng-if="vm.currentPage === 5" class="text-center">
+                <div class="col-lg-6">
+                    <div class="header">
+                        <h1 style="padding: 20px;">
+                            The most
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Anger'">angry</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Disgust'">disgusted</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Fear'">afraid</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Sadness'">sad</span>
+                            <span ng-if="vm.slideShow[vm.currentSlideShowPage-1].Emotion === 'Surprise'">surprised</span>
+                        </h1>
+                    </div>
+                    <div class="main text-center">
+                        <img height="1300" ng-src="{{vm.slideShow[vm.currentSlideShowPage-1].BlobUri}}">
+                    </div>
+                    <div class="footer">
+                        <h1 style="padding: 20px;">{{vm.slideShow[vm.currentSlideShowPage-1].User}} ({{(vm.slideShow[vm.currentSlideShowPage-1].Score*100).toFixed(3)}}%)</h1>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="header">
+                        <h1 style="padding: 20px;paddig-bottom:15px;">Latest</h1>
+                    </div>
+                    <div class="main">
+                        <img height="900" ng-src="{{vm.latestPhoto.blobUri}}" style="padding-bottom: 10px;">
+                        <h1 style="padding: 20px;">{{vm.latestPhoto.name}}</h1>
+                        <h2 style="padding-bottom: 30px;">Highest score: <strong>{{vm.latestPhoto.highestScore}}</strong></h2>
+                        <div class="col-lg-10 col-lg-offset-1 text-center">
+                            <table class="table table-condensed table-striped text-left" style="font-size: 30px;">
+                                <thead>
+                                    <tr class="is-bold">
+                                        <td>Emotion</td>
+                                        <td class="text-center">Score (%)</td>
+                                        <td class="text-right">Rank</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="emo in vm.latestPhoto.emotions | orderBy:'-score'">
+                                        <td>{{emo.name}}</td><td class="text-center">{{(emo.score*100).toFixed(3)}}%</td><td class="text-right"><i class="fa fa-star" class="bestRank" ng-if="emo.rank == 1"></i>&nbsp;&nbsp;{{emo.rank}}</td>
+                                    </tr> 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script type="text/javascript" src="angular.js">
+    </script>
+</body>
+</html>
